@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - lesson-5
+
 jobs:
 #  function_test: (commented out to save learner time)
 #    runs-on: ubuntu-latest
@@ -15,16 +16,30 @@ jobs:
 #      - run: npm install
 #      - name: Run functional tests
 #        run: npm test -- --coverage --watchAll=false
+
   deploy:
 #    needs: [function_test] (normally you'd not deploy until functional tests were complete)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
+
     steps:
       - uses: actions/checkout@v4
+
 #      - run: npm install && npm run build (commented out to save learner time)
+
       - name: Generate deployment package
         run: zip -r deploy.zip build Dockerfile
+
       - name: '**PLACEHOLDER** Deploy to Elastic Beanstalk'
         run: echo Placeholder for Deployment
+
+  security_test:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: 'https://hangryhippo.quantic.host'
